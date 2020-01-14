@@ -1,0 +1,14 @@
+<<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8">
+    <title>テストサイト</title>
+  </head>
+  <body>
+    <h1>勇者の戦い</h1>
+    {{ message }}
+    {% for player in players %}
+    <p>{{ player }}は{{ enemy }}と戦った</p>
+    {% endfor %}
+  </body>
+</html>>
