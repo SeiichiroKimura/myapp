@@ -1,14 +1,17 @@
-<<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ja">
   <head>
     <meta charset="utf-8">
-    <title>テストサイト</title>
+    <title>テスト掲示板</title>
   </head>
   <body>
-    <h1>勇者の戦い</h1>
-    {{ message }}
-    {% for player in players %}
-    <p>{{ player }}は{{ enemy }}と戦った</p>
-    {% endfor %}
+          <h1>paiza bbs</h1>
+          <p>{{ message }}</p>
+          {% for article in articles %}
+              <p>
+                  {{ article.content }},{{ article.user_name }},
+                  <a href="{% url 'bbs:detail' article.id %}">詳細</a>,
+              </p>
+          {% endfor %}
   </body>
-</html>>
+</html>
