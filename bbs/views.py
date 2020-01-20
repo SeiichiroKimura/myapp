@@ -1,12 +1,22 @@
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse
 from .models import Article
+from .forms import SearchForm
+from .forms import ArticleForm
 
 def index(request):
-    articles = Article.objects.all()
+    searchForm = SearchForm(request.GET)
+    if searchForm.is_valid():
+        keyword =  searchForm.cleaned_data['keyword']
+        articles = Article.objects.filter(content__contains=keyword)
+    else:
+        searchForm = SearchForm()
+        articles = Article.objects.all()
+
     context = {
-        'message': 'Welcome my BBS',
+        'message': 'Welcome to my BBS',
         'articles': articles,
+        'searchForm': searchForm,
     }
     return render(request, 'bbs/index.html', context)
 
@@ -18,16 +28,51 @@ def detail(request, id):
     }
     return render(request, 'bbs/detail.html', context)
 
-def create(request):
-    article = Article(content='Hi Everyone', user_name='paiza')
-    article.save()
+def new(request):
+    articleForm = ArticleForm()
 
-    articles = Article.objects.all()
+    context = {
+        'message': 'New Article',
+        'articleForm': articleForm,
+    }
+
+    return render(request, 'bbs/new.html', context)
+
+def create(request):
+    if request.method == 'POST':
+        articleForm = ArticleForm(request.POST)
+        if articleForm.is_valid():
+            article = articleForm.save()
+
     context = {
         'message': 'Create article',
-        'articles': articles,
+        'article': article,
     }
-    return render(request, 'bbs/index.html', context)
+    return render(request, 'bbs/detail.html', context)
+
+def edit(request, id):
+    article = get_object_or_404(Article, pk=id)
+    articleForm = ArticleForm(instance=article)
+
+    context = {
+        'message': 'Edit Article',
+        'article': article,
+        'articleForm': articleForm,
+    }
+    return render(request, 'bbs/edit.html', context)
+
+def update(request, id):
+    if request.method == 'POST':
+        article = get_object_or_404(Article, pk=id)
+        articleForm = ArticleForm(request.POST, instance=article)
+        if articleForm.is_valid():
+            articleForm.save()
+
+    context = {
+        'message': 'Updated article',
+        'article': article,
+    }
+    return render(request, 'bbs/detail.html', context)
 
 def delete(request, id):
     article = get_object_or_404(Article, pk=id)
